@@ -3,14 +3,15 @@ package co.edu.escuelaing.roundrobin;
 import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
+import static spark.Spark.after;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ListIterator;
+
+import spark.Filter;
 
 public class RoundRobin {
 
@@ -19,8 +20,14 @@ public class RoundRobin {
     public static void main(String[] args) {
         port(getPort());
 
+        after((Filter) (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "GET");
+        });
+
         get("messages", (request, response) -> {
-            String reqURL = "http://logservice:6000/messages";
+            System.out.println("Received GET request");
+            String reqURL = "http://logservice:35001/messages";
             requestURL = new URL(reqURL);
             try {
                 HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
@@ -39,7 +46,7 @@ public class RoundRobin {
         });
 
         post("messages", (request, response) -> {
-            requestURL = new URL("http://logservice:6000/messages");
+            requestURL = new URL("http://logservice:35001/messages");
             HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
             con.setRequestMethod("POST");
             con.setDoOutput(true);

@@ -25,6 +25,7 @@ public class LogService {
         port(getPort());
 
         get("messages", (request, response) -> {
+            System.out.println("Received GET request");
             FindIterable<Document> docs = collection.find().sort(descending("createdAt")).limit(10);
             if (docs == null) {
                 return "No messages found...";

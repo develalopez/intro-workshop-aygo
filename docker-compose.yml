@@ -6,7 +6,7 @@ services:
       context: ./logservice/
       dockerfile: Dockerfile
     expose:
-      - "6000"
+      - "35001"
     environment:
       - "MONGODB_CONNSTRING=mongodb://velomeister:velomeister@mongo:27017"
 
@@ -15,8 +15,16 @@ services:
       context: ./roundrobin/
       dockerfile: Dockerfile
     container_name: roundrobin
+    expose:
+      - "35000"
+
+  front:
+    build:
+      context: ./front/
+      dockerfile: Dockerfile
+    container_name: front
     ports:
-      - "35000:6000"
+      - "8080:80"
 
   mongo:
     image: mongo:latest

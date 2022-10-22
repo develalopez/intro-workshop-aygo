@@ -1,10 +1,3 @@
-FROM alpine:latest
+FROM httpd:latest
 
-WORKDIR /usrapp/bin
-
-ENV PORT 6000
-
-COPY /target/classes /usrapp/bin/classes
-COPY /target/dependency /usrapp/bin/dependency
-
-CMD [""]
+COPY ./public-html/ /usr/local/apache2/htdocs/
