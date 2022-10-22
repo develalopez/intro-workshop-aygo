@@ -5,9 +5,8 @@ services:
     build:
       context: ./logservice/
       dockerfile: Dockerfile
-    container_name: logservice
-    ports:
-      - "35001-35003:6000"
+    expose:
+      - "6000"
     environment:
       - "MONGODB_CONNSTRING=mongodb://velomeister:velomeister@mongo:27017"
 
@@ -19,14 +18,6 @@ services:
     ports:
       - "35000:6000"
 
-  front:
-    build:
-      context: ./front/
-      dockerfile: Dockerfile
-    container_name: front
-    ports:
-      - "80:6000"
-
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -37,3 +28,4 @@ services:
       - "MONGO_INITDB_ROOT_USERNAME=velomeister"
       - "MONGO_INITDB_ROOT_PASSWORD=velomeister"
       - "MONGO_INITDB_DATABASE=database"
+      - "MONGO_INITDB_COLLECTION=messages"

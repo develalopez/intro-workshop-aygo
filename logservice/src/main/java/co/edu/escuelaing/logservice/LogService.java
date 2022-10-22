@@ -16,11 +16,12 @@ public class LogService {
 
     private static MongoClient mongoClient;
     private static MongoClientURI mongoClientURI;
+    private static MongoDatabase database;
     private static MongoCollection<Document> collection;
 
     public static void main( String[] args ) {
         String connString = System.getenv("MONGODB_CONNSTRING");
-        collection = initMongoConnection(connString);
+        initMongoConnection(connString);
         port(getPort());
 
         get("messages", (request, response) -> {
@@ -48,12 +49,15 @@ public class LogService {
         return 4567;
     }
 
-    private static MongoCollection<Document> initMongoConnection(String connString) {
+    private static void initMongoConnection(String connString) {
         mongoClientURI = new MongoClientURI(connString);
         mongoClient = new MongoClient(mongoClientURI);
-        MongoDatabase database = mongoClient.getDatabase("database");
-        database.createCollection("messages");
-        MongoCollection<Document> collection = database.getCollection("messages");
-        return collection;
+        database = mongoClient.getDatabase("database");
+        try {
+            collection = database.getCollection("messages");
+        } catch (IllegalArgumentException ex) {
+            database.createCollection("messages");
+            collection = database.getCollection("messages");
+        }
     }
 }
