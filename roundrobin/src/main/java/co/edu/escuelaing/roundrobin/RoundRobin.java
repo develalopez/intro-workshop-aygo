@@ -3,15 +3,18 @@ package co.edu.escuelaing.roundrobin;
 import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
-import static spark.Spark.after;
+import static spark.Spark.staticFiles;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import spark.Filter;
+import spark.ModelAndView;
+import spark.template.velocity.VelocityTemplateEngine;
 
 public class RoundRobin {
 
@@ -20,14 +23,16 @@ public class RoundRobin {
     public static void main(String[] args) {
         port(getPort());
 
-        after((Filter) (request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET");
-        });
+        staticFiles.location("public");
+
+        get("", (request, response) -> {
+            Map<String, Object> model = new HashMap<>();
+            return new ModelAndView(model, "index.html");
+        }, new VelocityTemplateEngine());
 
         get("messages", (request, response) -> {
             System.out.println("Received GET request");
-            String reqURL = "http://logservice:35001/messages";
+            String reqURL = "http://logservice:6000/messages";
             requestURL = new URL(reqURL);
             try {
                 HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
@@ -46,12 +51,13 @@ public class RoundRobin {
         });
 
         post("messages", (request, response) -> {
-            requestURL = new URL("http://logservice:35001/messages");
+            requestURL = new URL("http://logservice:6000/messages");
+            response.redirect("");
             HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             OutputStream os = con.getOutputStream();
-            os.write(request.body().getBytes());
+            os.write(request.body().split("=")[1].getBytes());
             os.flush();
             os.close();
             BufferedReader in = new BufferedReader(

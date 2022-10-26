@@ -2,6 +2,8 @@ package co.edu.escuelaing.logservice;
 
 import static spark.Spark.*;
 
+import java.util.ArrayList;
+
 import org.bson.Document;
 
 import com.mongodb.MongoClient;
@@ -30,11 +32,11 @@ public class LogService {
             if (docs == null) {
                 return "No messages found...";
             }
-            String messages = "";
+            ArrayList<String> messages = new ArrayList<>();
             for (Document doc : docs) {
-                messages += doc.toJson();
+                messages.add(doc.toJson());
             }
-            return messages;
+            return messages.toString();
         });
 
         post("messages", (request, response) -> {

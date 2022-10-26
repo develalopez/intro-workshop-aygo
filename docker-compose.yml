@@ -5,8 +5,6 @@ services:
     build:
       context: ./logservice/
       dockerfile: Dockerfile
-    expose:
-      - "35001"
     environment:
       - "MONGODB_CONNSTRING=mongodb://velomeister:velomeister@mongo:27017"
 
@@ -14,24 +12,13 @@ services:
     build:
       context: ./roundrobin/
       dockerfile: Dockerfile
-    container_name: roundrobin
-    expose:
-      - "35000"
-
-  front:
-    build:
-      context: ./front/
-      dockerfile: Dockerfile
-    container_name: front
     ports:
-      - "8080:80"
+      - "80:6000"
 
   mongo:
     image: mongo:latest
     container_name: mongo
     restart: always
-    ports:
-      - 27017:27017
     environment:
       - "MONGO_INITDB_ROOT_USERNAME=velomeister"
       - "MONGO_INITDB_ROOT_PASSWORD=velomeister"
